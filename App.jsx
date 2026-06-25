@@ -23,7 +23,8 @@ import {
   ChevronFirst,
   Map,
   BookOpen,
-  CheckSquare
+  CheckSquare,
+  Rocket // Added Rocket icon for the new feature
 } from 'lucide-react';
 
 // Custom PDF Viewer to bypass browser iframe restrictions
@@ -321,6 +322,106 @@ const RoadmapViewer = ({ roadmap }) => {
   );
 };
 
+// Startup Generator Viewer
+const StartupViewer = ({ startup }) => {
+  if (!startup) return null;
+
+  return (
+    <div className="w-full h-full bg-[#FFF0DC] overflow-y-auto p-6 flex flex-col select-none">
+      <div className="mb-6 flex items-center justify-between border-b border-[#F0BB78]/50 pb-4">
+        <div>
+          <h2 className="text-xl font-bold text-[#131010] flex items-center gap-2">
+            <Rocket className="text-[#543A14]" /> Paper-to-Startup
+          </h2>
+          <p className="text-xs text-[#543A14] mt-1">Key startup concepts generated from the research paper.</p>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Value Proposition */}
+        <div className="border border-[#F0BB78]/50 rounded-xl p-5 bg-[#FFF0DC] shadow-sm">
+           <h3 className="text-sm font-bold text-[#131010] mb-3 border-b border-[#F0BB78]/30 pb-2 uppercase tracking-wide flex items-center gap-2">
+               Problem & Solution
+           </h3>
+           <div className="space-y-4">
+               <div>
+                   <h4 className="text-xs font-semibold text-[#543A14] mb-1">Problem Statement</h4>
+                   <p className="text-sm text-[#131010]">{startup.problem_statement}</p>
+               </div>
+               <div>
+                   <h4 className="text-xs font-semibold text-[#543A14] mb-1">Solution (Product Idea)</h4>
+                   <p className="text-sm text-[#131010]">{startup.product_idea}</p>
+               </div>
+               <div>
+                   <h4 className="text-xs font-semibold text-[#543A14] mb-1">Value Proposition</h4>
+                   <p className="text-sm text-[#131010]">{startup.value_proposition}</p>
+               </div>
+           </div>
+        </div>
+
+        {/* Market & Strategy */}
+        <div className="border border-[#F0BB78]/50 rounded-xl p-5 bg-[#FFF0DC] shadow-sm">
+           <h3 className="text-sm font-bold text-[#131010] mb-3 border-b border-[#F0BB78]/30 pb-2 uppercase tracking-wide flex items-center gap-2">
+               Market & Business
+           </h3>
+           <div className="space-y-4">
+               <div>
+                   <h4 className="text-xs font-semibold text-[#543A14] mb-1">Target Users / Market</h4>
+                   <p className="text-sm text-[#131010]">{startup.target_users}</p>
+               </div>
+               <div>
+                   <h4 className="text-xs font-semibold text-[#543A14] mb-1">Potential Competitors / Alternatives</h4>
+                   <p className="text-sm text-[#131010]">{startup.competitors}</p>
+               </div>
+               <div>
+                   <h4 className="text-xs font-semibold text-[#543A14] mb-1">Potential Revenue Streams</h4>
+                   <ul className="space-y-1">
+                      {startup.revenue_streams?.map((stream, idx) => (
+                          <li key={idx} className="text-sm text-[#131010] flex items-start gap-2">
+                             <span className="text-[#F0BB78] font-bold mt-0.5">•</span>
+                             {stream}
+                          </li>
+                      ))}
+                   </ul>
+               </div>
+           </div>
+        </div>
+
+        {/* Development & Next Steps */}
+        <div className="border border-[#F0BB78]/50 rounded-xl p-5 bg-[#FFF0DC] shadow-sm md:col-span-2">
+           <h3 className="text-sm font-bold text-[#131010] mb-3 border-b border-[#F0BB78]/30 pb-2 uppercase tracking-wide flex items-center gap-2">
+               Development
+           </h3>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                   <h4 className="text-xs font-semibold text-[#543A14] mb-1">MVP Features</h4>
+                   <ul className="space-y-1">
+                      {startup.mvp_features?.map((feature, idx) => (
+                          <li key={idx} className="text-sm text-[#131010] flex items-start gap-2">
+                             <span className="text-[#F0BB78] font-bold mt-0.5">•</span>
+                             {feature}
+                          </li>
+                      ))}
+                   </ul>
+               </div>
+               <div>
+                   <h4 className="text-xs font-semibold text-[#543A14] mb-1">Key Technologies / Resources Needed</h4>
+                   <ul className="space-y-1">
+                      {startup.technologies?.map((tech, idx) => (
+                          <li key={idx} className="text-sm text-[#131010] flex items-start gap-2">
+                             <span className="text-[#F0BB78] font-bold mt-0.5">•</span>
+                             {tech}
+                          </li>
+                      ))}
+                   </ul>
+               </div>
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Reusable tab button to support icon-only base + text on hover feature
 const TabButton = ({ tabId, activeTab, setActiveTab, icon: Icon, label }) => {
   const isActive = activeTab === tabId;
@@ -353,10 +454,11 @@ export default function App() {
   const [keyStatus, setKeyStatus] = useState('idle'); // idle, testing, valid, invalid
   const [documents, setDocuments] = useState([]);
   const [selectedDocId, setSelectedDocId] = useState(null);
-  const [activeTab, setActiveTab] = useState('document'); // document, mindmap, presentation, roadmap
+  const [activeTab, setActiveTab] = useState('document'); // document, mindmap, presentation, roadmap, startup
   const [isGeneratingFeature, setIsGeneratingFeature] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [toastMessage, setToastMessage] = useState(null);
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(true); // Added welcome message state
   
   // Chat State
   const [chatHistory, setChatHistory] = useState([
@@ -462,6 +564,7 @@ export default function App() {
           mindmap: null,
           presentation: null,
           roadmap: null,
+          startup: null // added startup field
         };
 
         newDocs.push(newDoc);
@@ -521,6 +624,8 @@ export default function App() {
         prompt = "Create a presentation summarizing this document. Return ONLY a valid JSON array of objects with this exact structure: [ { \"title\": \"Slide 1 Title\", \"content\": [\"Bullet point 1\", \"Bullet point 2\"] } ]";
       } else if (type === 'roadmap') {
         prompt = "Create a structured, logical, weekly learning roadmap (4-week guideline) from this research paper designed for students. Return ONLY a valid JSON array of objects with this exact structure: [ { \"week\": \"Week 1\", \"theme\": \"Theme or Focus of this week\", \"tasks\": [\"Task or objective 1\", \"Task or objective 2\"], \"deliverables\": [\"Expected learning outcome or milestone\"] } ]";
+      } else if (type === 'startup') {
+        prompt = "Analyze this research paper and extract potential concepts to build a tech startup. Return ONLY a valid JSON object with this exact structure: { \"problem_statement\": \"A 1-2 sentence description of the problem solved by this research.\", \"product_idea\": \"A 1-2 sentence idea for a commercial product/service based on this paper.\", \"value_proposition\": \"The unique value this brings to the market.\", \"target_users\": \"Who would buy or use this product.\", \"competitors\": \"Potential competitors or current alternative solutions.\", \"revenue_streams\": [\"Idea 1\", \"Idea 2\"], \"mvp_features\": [\"Feature 1\", \"Feature 2\"], \"technologies\": [\"Tech 1\", \"Resource 1\"] }";
       }
 
       const payload = {
@@ -676,6 +781,56 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen bg-[#FFF0DC] font-sans text-[#131010] relative overflow-hidden">
       
+      {/* Welcome Message Modal */}
+      {showWelcomeMessage && (
+        <div className="absolute inset-0 z-50 bg-[#131010]/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#FFF0DC] border border-[#F0BB78] rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-300">
+             <div className="flex items-center justify-center mb-4">
+                <div className="bg-[#F0BB78] p-3 rounded-full">
+                  <Bot size={32} className="text-[#131010]" />
+                </div>
+             </div>
+             <h2 className="text-2xl font-bold text-center text-[#131010] mb-2">Welcome to Research LLM</h2>
+             <p className="text-sm text-[#543A14] text-center mb-6">
+                Your AI-powered academic assistant for analyzing and extracting value from research papers.
+             </p>
+             
+             <div className="space-y-3 mb-6">
+                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
+                    <Network size={18} className="text-[#543A14] shrink-0 mt-0.5" />
+                    <p className="text-xs text-[#131010]"><strong>Mind Maps:</strong> Generate hierarchical knowledge graphs instantly.</p>
+                 </div>
+                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
+                    <MonitorPlay size={18} className="text-[#543A14] shrink-0 mt-0.5" />
+                    <p className="text-xs text-[#131010]"><strong>Presentations:</strong> Convert papers into ready-to-present slide decks.</p>
+                 </div>
+                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
+                    <Map size={18} className="text-[#543A14] shrink-0 mt-0.5" />
+                    <p className="text-xs text-[#131010]"><strong>Roadmaps:</strong> Create week-by-week learning guides for students.</p>
+                 </div>
+                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
+                    <Rocket size={18} className="text-[#543A14] shrink-0 mt-0.5" />
+                    <p className="text-xs text-[#131010]"><strong>Paper-to-Startup:</strong> Extract product ideas and business plans.</p>
+                 </div>
+             </div>
+
+             <div className="bg-[#131010] text-[#FFF0DC] p-3 rounded-lg mb-6 flex items-start gap-2 shadow-inner">
+                <AlertCircle size={16} className="text-[#F0BB78] shrink-0 mt-0.5" />
+                <p className="text-xs">
+                   <strong>Note:</strong> You need a valid <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-[#F0BB78] underline">Gemini API Key</a> to use this application. Enter it in the top right corner.
+                </p>
+             </div>
+
+             <button 
+                onClick={() => setShowWelcomeMessage(false)}
+                className="w-full bg-[#F0BB78] text-[#131010] py-3 rounded-xl font-bold hover:bg-[#F0BB78]/80 transition-colors shadow-sm"
+             >
+                Cheers!
+             </button>
+          </div>
+        </div>
+      )}
+
       {/* 5-Second Toast Notification */}
       {toastMessage && (
         <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 bg-rose-500 text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 transition-all">
@@ -887,6 +1042,14 @@ export default function App() {
                     label="Roadmap" 
                   />
 
+                  <TabButton 
+                    tabId="startup" 
+                    activeTab={activeTab} 
+                    setActiveTab={setActiveTab} 
+                    icon={Rocket} 
+                    label="Startup" 
+                  />
+
                   <div className="ml-auto flex items-center pr-2">
                      <span className="text-xs text-[#543A14] font-semibold truncate max-w-[150px]" title={selectedDocument.name}>{selectedDocument.name}</span>
                   </div>
@@ -993,6 +1156,29 @@ export default function App() {
                       </div>
                     ) : (
                       <RoadmapViewer roadmap={selectedDocument.roadmap} />
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'startup' && (
+                  <div className="flex-1 overflow-hidden relative bg-[#FFF0DC] flex flex-col">
+                    {!selectedDocument.startup ? (
+                      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#FFF0DC]">
+                         <div className="bg-[#F0BB78]/20 p-4 rounded-full mb-4">
+                           <Rocket size={40} className="text-[#543A14]" />
+                         </div>
+                         <h3 className="text-lg font-bold text-[#131010] mb-2">Paper-to-Startup</h3>
+                         <p className="text-sm text-[#543A14] mb-6 max-w-md leading-relaxed">Extract potential product ideas, target markets, value propositions, and MVP features to build a startup based on this research.</p>
+                         <button 
+                           onClick={() => handleGenerateFeature('startup')}
+                           disabled={isGeneratingFeature}
+                           className="flex items-center gap-2 bg-[#F0BB78] text-[#131010] px-5 py-2.5 rounded-lg hover:bg-[#F0BB78]/80 disabled:opacity-50 transition-colors font-medium shadow-sm"
+                         >
+                           {isGeneratingFeature ? <><Loader2 size={18} className="animate-spin" /> Analyzing Potential...</> : <><Rocket size={18} /> Generate Startup Plan</>}
+                         </button>
+                      </div>
+                    ) : (
+                      <StartupViewer startup={selectedDocument.startup} />
                     )}
                   </div>
                 )}
