@@ -187,12 +187,12 @@ const PanZoomWrapper = ({ children }) => {
 // Recursive Mindmap Node - Beautiful interactive design with descriptions
 const MindmapNode = ({ node }) => (
   <li>
-    <div className="inline-block border border-[#F0BB78] bg-[#FFF0DC] p-3 rounded-xl text-left shadow-md min-w-[180px] max-w-[280px] relative z-10 hover:shadow-lg transition-all text-[#131010] hover:scale-105 duration-200">
-      <div className="font-bold text-sm text-[#131010] border-b border-[#F0BB78]/50 pb-1.5 mb-1.5 tracking-tight">
+    <div className="inline-block border border-gray-200 bg-white p-3 rounded-xl text-left shadow-sm hover:shadow-md min-w-[180px] max-w-[280px] relative z-10 transition-all hover:scale-105 duration-200">
+      <div className="font-bold text-sm text-gray-900 border-b border-gray-100 pb-1.5 mb-1.5 tracking-tight">
         {node.name}
       </div>
       {node.description && (
-        <p className="text-[11px] text-[#543A14] leading-relaxed font-normal">
+        <p className="text-[11px] text-gray-600 leading-relaxed font-normal">
           {node.description}
         </p>
       )}
@@ -427,7 +427,7 @@ const StartupViewer = ({ startup }) => {
   );
 };
 
-// Interview Preparation Tab Component
+// Interview Preparation Tab Component with self-check mechanics
 const InterviewViewer = ({ interview }) => {
   if (!interview) return null;
 
@@ -933,68 +933,94 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen bg-[#FFF0DC] font-sans text-[#131010] relative overflow-hidden">
       
-      {/* Welcome Message Modal with Interview Prep feature updated */}
+      {/* Welcome Message Modal with compact 2-column grid */}
       {showWelcomeMessage && (
-        <div className="absolute inset-0 z-50 bg-[#131010]/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#FFF0DC] border border-[#F0BB78] rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-300">
-             <div className="flex items-center justify-center mb-4">
-                <div className="bg-[#F0BB78] p-3 rounded-full">
-                  <Bot size={32} className="text-[#131010]" />
+        <div className="absolute inset-0 z-50 bg-[#131010]/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#FFF0DC] border border-[#F0BB78] rounded-2xl shadow-2xl max-w-lg w-full p-6 animate-in fade-in zoom-in duration-300 overflow-y-auto max-h-[90vh]">
+             <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="bg-[#F0BB78] p-2 rounded-full">
+                  <Bot size={24} className="text-[#131010]" />
                 </div>
+                <h2 className="text-xl font-bold text-[#131010]">Research LLM Workspace</h2>
              </div>
-             <h2 className="text-2xl font-bold text-center text-[#131010] mb-2">Welcome to Research LLM</h2>
-             <p className="text-sm text-[#543A14] text-center mb-6">
-                Your AI-powered academic assistant for analyzing and extracting value from research papers.
+             
+             <p className="text-xs text-[#543A14] text-center mb-4 max-w-sm mx-auto">
+                AI academic workspace to read, restructure, and conceptualize research publications instantly.
              </p>
              
-             <div className="space-y-3 mb-6">
-                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
-                    <Network size={18} className="text-[#543A14] shrink-0 mt-0.5" />
-                    <p className="text-xs text-[#131010]"><strong>Mind Maps:</strong> Generate hierarchical knowledge graphs instantly.</p>
+             {/* Highly optimized 2x3 grid of minimal, compact square-ish cards */}
+             <div className="grid grid-cols-2 gap-3 mb-4">
+                 
+                 {/* Research Chatbot */}
+                 <div className="bg-[#F0BB78]/10 p-2.5 rounded-xl border border-[#F0BB78]/35 flex flex-col items-center text-center">
+                    <div className="bg-[#F0BB78]/20 p-1.5 rounded-lg mb-1">
+                      <Bot size={16} className="text-[#543A14]" />
+                    </div>
+                    <span className="text-[11px] font-bold text-[#131010] leading-tight">Research Chat</span>
+                    <span className="text-[9px] text-[#543A14]/90 mt-0.5 leading-tight">Query uploaded documents directly.</span>
                  </div>
-                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
-                    <MonitorPlay size={18} className="text-[#543A14] shrink-0 mt-0.5" />
-                    <p className="text-xs text-[#131010]"><strong>Presentations:</strong> Convert papers into ready-to-present slide decks.</p>
+
+                 {/* Mind Maps */}
+                 <div className="bg-[#F0BB78]/10 p-2.5 rounded-xl border border-[#F0BB78]/35 flex flex-col items-center text-center">
+                    <div className="bg-[#F0BB78]/20 p-1.5 rounded-lg mb-1">
+                      <Network size={16} className="text-[#543A14]" />
+                    </div>
+                    <span className="text-[11px] font-bold text-[#131010] leading-tight">Mind Maps</span>
+                    <span className="text-[9px] text-[#543A14]/90 mt-0.5 leading-tight">Interactive knowledge hierarchies.</span>
                  </div>
-                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
-                    <Map size={18} className="text-[#543A14] shrink-0 mt-0.5" />
-                    <p className="text-xs text-[#131010]"><strong>Roadmaps:</strong> Create week-by-week learning guides for students.</p>
+
+                 {/* Presentations */}
+                 <div className="bg-[#F0BB78]/10 p-2.5 rounded-xl border border-[#F0BB78]/35 flex flex-col items-center text-center">
+                    <div className="bg-[#F0BB78]/20 p-1.5 rounded-lg mb-1">
+                      <MonitorPlay size={16} className="text-[#543A14]" />
+                    </div>
+                    <span className="text-[11px] font-bold text-[#131010] leading-tight">Presentations</span>
+                    <span className="text-[9px] text-[#543A14]/90 mt-0.5 leading-tight">Convert publications into slide decks.</span>
                  </div>
-                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
-                    <Rocket size={18} className="text-[#543A14] shrink-0 mt-0.5" />
-                    <p className="text-xs text-[#131010]"><strong>Paper-to-Startup:</strong> Extract product ideas and business plans.</p>
+
+                 {/* Roadmaps */}
+                 <div className="bg-[#F0BB78]/10 p-2.5 rounded-xl border border-[#F0BB78]/35 flex flex-col items-center text-center">
+                    <div className="bg-[#F0BB78]/20 p-1.5 rounded-lg mb-1">
+                      <Map size={16} className="text-[#543A14]" />
+                    </div>
+                    <span className="text-[11px] font-bold text-[#131010] leading-tight">Study Roadmaps</span>
+                    <span className="text-[9px] text-[#543A14]/90 mt-0.5 leading-tight">Week-by-week curriculum plans.</span>
                  </div>
-                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
-                    <GraduationCap size={18} className="text-[#543A14] shrink-0 mt-0.5" />
-                    <p className="text-xs text-[#131010]"><strong>Interview Prep:</strong> Generate FAQs, technical questions, and thesis defense guidelines.</p>
+
+                 {/* Startup Planner */}
+                 <div className="bg-[#F0BB78]/10 p-2.5 rounded-xl border border-[#F0BB78]/35 flex flex-col items-center text-center">
+                    <div className="bg-[#F0BB78]/20 p-1.5 rounded-lg mb-1">
+                      <Rocket size={16} className="text-[#543A14]" />
+                    </div>
+                    <span className="text-[11px] font-bold text-[#131010] leading-tight">Paper-to-Startup</span>
+                    <span className="text-[9px] text-[#543A14]/90 mt-0.5 leading-tight">Commercialization concepts & MVPs.</span>
                  </div>
+
+                 {/* Interview Defense */}
+                 <div className="bg-[#F0BB78]/10 p-2.5 rounded-xl border border-[#F0BB78]/35 flex flex-col items-center text-center">
+                    <div className="bg-[#F0BB78]/20 p-1.5 rounded-lg mb-1">
+                      <GraduationCap size={16} className="text-[#543A14]" />
+                    </div>
+                    <span className="text-[11px] font-bold text-[#131010] leading-tight">Interview Prep</span>
+                    <span className="text-[9px] text-[#543A14]/90 mt-0.5 leading-tight">Predict FAQs & thesis defense questions.</span>
+                 </div>
+
              </div>
 
-             <div className="bg-[#131010] text-[#FFF0DC] p-3 rounded-lg mb-6 flex items-start gap-2 shadow-inner">
-                <AlertCircle size={16} className="text-[#F0BB78] shrink-0 mt-0.5" />
-                <p className="text-xs">
-                   <strong>Note:</strong> You need a valid <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-[#F0BB78] underline">Gemini API Key</a> to use this application. Enter it in the top right corner.
+             <div className="bg-[#131010] text-[#FFF0DC] p-2.5 rounded-xl mb-4 flex items-start gap-2 shadow-inner border border-[#F0BB78]/20">
+                <AlertCircle size={15} className="text-[#F0BB78] shrink-0 mt-0.5" />
+                <p className="text-[10px] leading-tight">
+                   <strong>User Note:</strong> You need a valid <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-[#F0BB78] underline hover:text-[#FFF0DC]">Gemini API Key</a> to unlock full generation. Paste it in the top settings bar.
                 </p>
              </div>
 
              <button 
                 onClick={() => setShowWelcomeMessage(false)}
-                className="w-full bg-[#F0BB78] text-[#131010] py-3 rounded-xl font-bold hover:bg-[#F0BB78]/80 transition-colors shadow-sm"
+                className="w-full bg-[#F0BB78] text-[#131010] py-2.5 rounded-xl font-bold hover:bg-[#F0BB78]/80 transition-colors shadow-sm text-xs"
              >
                 Cheers!
              </button>
           </div>
-        </div>
-      )}
-
-      {/* 5-Second Toast Notification */}
-      {toastMessage && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 bg-rose-500 text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 transition-all">
-          <AlertCircle size={20} />
-          <span className="text-sm font-medium">{toastMessage}</span>
-          <button onClick={() => setToastMessage(null)} className="ml-2 hover:bg-rose-600 p-1 rounded-md transition-colors">
-            <X size={16} />
-          </button>
         </div>
       )}
 
@@ -1164,7 +1190,7 @@ export default function App() {
               <div className="w-full h-full bg-[#FFF0DC] rounded-xl shadow-sm border border-[#F0BB78]/50 overflow-hidden flex flex-col">
                 
                 {/* Re-designed Adaptive Tab Switches */}
-                <div className="h-12 bg-[#F0BB78]/10 border-b border-[#F0BB78]/50 flex items-center px-2 shrink-0 gap-1 overflow-x-auto select-none">
+                <div className="h-12 bg-[#F0BB78]/10 border-b border-[#F0BB78]/50 flex items-center px-2 shrink-0 gap-1 overflow-x-auto select-none font-sans">
                   
                   <TabButton 
                     tabId="document" 
@@ -1259,14 +1285,14 @@ export default function App() {
                         <style>{`
                           .css-tree ul { padding-top: 24px; position: relative; display: flex; justify-content: center; }
                           .css-tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 24px 8px 0 8px; }
-                          .css-tree li::before, .css-tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #F0BB78; width: 50%; height: 24px; }
-                          .css-tree li::after { right: auto; left: 50%; border-left: 2px solid #F0BB78; }
+                          .css-tree li::before, .css-tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #cbd5e1; width: 50%; height: 24px; }
+                          .css-tree li::after { right: auto; left: 50%; border-left: 2px solid #cbd5e1; }
                           .css-tree li:only-child::after, .css-tree li:only-child::before { display: none; }
                           .css-tree li:only-child { padding-top: 0; }
                           .css-tree li:first-child::before, .css-tree li:last-child::after { border: 0 none; }
-                          .css-tree li:last-child::before { border-right: 2px solid #F0BB78; border-radius: 0 6px 0 0; }
+                          .css-tree li:last-child::before { border-right: 2px solid #cbd5e1; border-radius: 0 6px 0 0; }
                           .css-tree li:first-child::after { border-radius: 6px 0 0 0; }
-                          .css-tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #F0BB78; width: 0; height: 24px; }
+                          .css-tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #cbd5e1; width: 0; height: 24px; }
                         `}</style>
                         <div className="css-tree p-10 select-none">
                            <ul>
@@ -1354,14 +1380,14 @@ export default function App() {
                          <div className="bg-[#F0BB78]/20 p-4 rounded-full mb-4">
                            <GraduationCap size={40} className="text-[#543A14]" />
                          </div>
-                         <h3 className="text-lg font-bold text-[#131010] mb-2">Prepare for Presentation & Thesis Defense</h3>
-                         <p className="text-sm text-[#543A14] mb-6 max-w-md leading-relaxed">Let Gemini generate custom Frequently Asked Questions, Technical Deep-dives, and challenging Research Defense inquiries complete with top-tier model answers.</p>
+                         <h3 className="text-lg font-bold text-[#131010] mb-2">Prepare for Thesis Defense</h3>
+                         <p className="text-sm text-[#543A14] mb-6 max-w-md leading-relaxed">Let Gemini generate custom Frequently Asked Questions, Technical Deep-dives, and challenging Research Defense inquiries complete with suggested model answers.</p>
                          <button 
                            onClick={() => handleGenerateFeature('interview')}
                            disabled={isGeneratingFeature}
                            className="flex items-center gap-2 bg-[#F0BB78] text-[#131010] px-5 py-2.5 rounded-lg hover:bg-[#F0BB78]/80 disabled:opacity-50 transition-colors font-medium shadow-sm"
                          >
-                           {isGeneratingFeature ? <><Loader2 size={18} className="animate-spin" /> Formulating Exam Inquiries...</> : <><GraduationCap size={18} /> Generate Interview Prep Materials</>}
+                           {isGeneratingFeature ? <><Loader2 size={18} className="animate-spin" /> Formulating Inquiries...</> : <><GraduationCap size={18} /> Generate Interview Prep</>}
                          </button>
                       </div>
                     ) : (
@@ -1382,7 +1408,6 @@ export default function App() {
           )}
         </div>
 
-        {}
         {/* Right Panel: Chatbot */}
         <div 
           className={`bg-[#FFF0DC] border-l border-[#F0BB78]/50 flex flex-col shrink-0 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.02)] transition-all duration-300 relative ${
