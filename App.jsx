@@ -19,12 +19,17 @@ import {
   ChevronLeft,
   ChevronRight,
   MousePointer2,
-  ChevronLast,
-  ChevronFirst,
   Map,
   BookOpen,
   CheckSquare,
-  Rocket // Added Rocket icon for the new feature
+  Rocket,
+  GraduationCap,
+  PanelLeftClose,
+  PanelLeft,
+  PanelRightClose,
+  PanelRight,
+  HelpCircle,
+  Award
 } from 'lucide-react';
 
 // Custom PDF Viewer to bypass browser iframe restrictions
@@ -422,6 +427,137 @@ const StartupViewer = ({ startup }) => {
   );
 };
 
+// Interview Preparation Tab Component
+const InterviewViewer = ({ interview }) => {
+  if (!interview) return null;
+
+  const [revealedIndex, setRevealedIndex] = useState({});
+  const [masteredIndex, setMasteredIndex] = useState({});
+
+  const toggleReveal = (section, idx) => {
+    const key = `${section}-${idx}`;
+    setRevealedIndex(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleMastered = (section, idx, e) => {
+    e.stopPropagation();
+    const key = `${section}-${idx}`;
+    setMasteredIndex(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const InterviewSection = ({ title, items, sectionKey, icon: IconComponent }) => (
+    <div className="border border-[#F0BB78]/50 rounded-xl p-5 bg-[#FFF0DC] shadow-sm mb-6">
+      <h3 className="text-sm font-bold text-[#131010] mb-4 border-b border-[#F0BB78]/30 pb-2 uppercase tracking-wide flex items-center gap-2">
+        <IconComponent size={16} className="text-[#543A14]" /> {title}
+      </h3>
+      <div className="space-y-4">
+        {items?.map((item, idx) => {
+          const key = `${sectionKey}-${idx}`;
+          const isRevealed = revealedIndex[key];
+          const isMastered = masteredIndex[key];
+
+          return (
+            <div 
+              key={idx} 
+              onClick={() => toggleReveal(sectionKey, idx)}
+              className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                isMastered 
+                  ? 'bg-emerald-500/5 border-emerald-500/20 opacity-80' 
+                  : 'bg-[#F0BB78]/5 border-[#F0BB78]/20 hover:border-[#F0BB78]/50 hover:bg-[#F0BB78]/10'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#543A14] block mb-1">
+                    Question {idx + 1}
+                  </span>
+                  <p className="text-sm font-bold text-[#131010] leading-relaxed">
+                    {item.question}
+                  </p>
+                </div>
+                <button 
+                  onClick={(e) => toggleMastered(sectionKey, idx, e)}
+                  className={`px-2.5 py-1 rounded text-xs font-bold shrink-0 transition-colors border ${
+                    isMastered 
+                      ? 'bg-emerald-600 text-white border-emerald-600' 
+                      : 'bg-transparent text-[#543A14] border-[#F0BB78] hover:bg-[#F0BB78]/20'
+                  }`}
+                >
+                  {isMastered ? 'Mastered ✓' : 'Mark Mastered'}
+                </button>
+              </div>
+
+              {/* Revealable Answer */}
+              <div className={`mt-3 pt-3 border-t border-[#F0BB78]/20 overflow-hidden transition-all duration-300 ${
+                isRevealed ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+              }`}>
+                <div className="bg-[#FFF0DC] border border-[#F0BB78]/30 p-3 rounded-lg">
+                  <span className="text-[10px] font-bold text-[#543A14] uppercase block mb-1">Suggested Model Answer:</span>
+                  <p className="text-sm text-[#131010] leading-relaxed font-sans">{item.answer}</p>
+                </div>
+              </div>
+
+              <div className="mt-2 text-right">
+                <span className="text-[10px] font-bold text-[#543A14] hover:underline">
+                  {isRevealed ? 'Hide Model Answer ▲' : 'Click to Reveal Answer ▼'}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="w-full h-full bg-[#FFF0DC] overflow-y-auto p-6 flex flex-col select-none">
+      <div className="mb-6 flex items-center justify-between border-b border-[#F0BB78]/50 pb-4">
+        <div>
+          <h2 className="text-xl font-bold text-[#131010] flex items-center gap-2">
+            <GraduationCap className="text-[#543A14]" /> Interview & Defense Preparation
+          </h2>
+          <p className="text-xs text-[#543A14] mt-1">Get ready to present or defend your paper. Toggle questions to test yourself on answers.</p>
+        </div>
+        <div className="text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
+          {Object.values(masteredIndex).filter(Boolean).length} / {(interview.faq?.length || 0) + (interview.technical?.length || 0) + (interview.defense?.length || 0)} Questions Mastered
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* FAQs */}
+        <div className="lg:col-span-1">
+          <InterviewSection 
+            title="Frequently Asked Questions" 
+            items={interview.faq} 
+            sectionKey="faq" 
+            icon={HelpCircle} 
+          />
+        </div>
+
+        {/* Technical Deep Dive */}
+        <div className="lg:col-span-1">
+          <InterviewSection 
+            title="Technical Questions" 
+            items={interview.technical} 
+            sectionKey="technical" 
+            icon={Network} 
+          />
+        </div>
+
+        {/* Defense Deep Dive */}
+        <div className="lg:col-span-1">
+          <InterviewSection 
+            title="Research Defense" 
+            items={interview.defense} 
+            sectionKey="defense" 
+            icon={Award} 
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Reusable tab button to support icon-only base + text on hover feature
 const TabButton = ({ tabId, activeTab, setActiveTab, icon: Icon, label }) => {
   const isActive = activeTab === tabId;
@@ -454,11 +590,12 @@ export default function App() {
   const [keyStatus, setKeyStatus] = useState('idle'); // idle, testing, valid, invalid
   const [documents, setDocuments] = useState([]);
   const [selectedDocId, setSelectedDocId] = useState(null);
-  const [activeTab, setActiveTab] = useState('document'); // document, mindmap, presentation, roadmap, startup
+  const [activeTab, setActiveTab] = useState('document'); // document, mindmap, presentation, roadmap, startup, interview
   const [isGeneratingFeature, setIsGeneratingFeature] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true); // Right sidebar state
   const [toastMessage, setToastMessage] = useState(null);
-  const [showWelcomeMessage, setShowWelcomeMessage] = useState(true); // Added welcome message state
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(true); 
   
   // Chat State
   const [chatHistory, setChatHistory] = useState([
@@ -564,7 +701,8 @@ export default function App() {
           mindmap: null,
           presentation: null,
           roadmap: null,
-          startup: null // added startup field
+          startup: null,
+          interview: null
         };
 
         newDocs.push(newDoc);
@@ -606,7 +744,7 @@ export default function App() {
     }, 5000);
   };
 
-  // Generate Features (Mindmap / Presentation / Roadmap)
+  // Generate Features (Mindmap / Presentation / Roadmap / Startup / Interview)
   const handleGenerateFeature = async (type) => {
     if (keyStatus !== 'valid') {
       showToast("Please connect a valid Gemini API Key first.");
@@ -626,6 +764,20 @@ export default function App() {
         prompt = "Create a structured, logical, weekly learning roadmap (4-week guideline) from this research paper designed for students. Return ONLY a valid JSON array of objects with this exact structure: [ { \"week\": \"Week 1\", \"theme\": \"Theme or Focus of this week\", \"tasks\": [\"Task or objective 1\", \"Task or objective 2\"], \"deliverables\": [\"Expected learning outcome or milestone\"] } ]";
       } else if (type === 'startup') {
         prompt = "Analyze this research paper and extract potential concepts to build a tech startup. Return ONLY a valid JSON object with this exact structure: { \"problem_statement\": \"A 1-2 sentence description of the problem solved by this research.\", \"product_idea\": \"A 1-2 sentence idea for a commercial product/service based on this paper.\", \"value_proposition\": \"The unique value this brings to the market.\", \"target_users\": \"Who would buy or use this product.\", \"competitors\": \"Potential competitors or current alternative solutions.\", \"revenue_streams\": [\"Idea 1\", \"Idea 2\"], \"mvp_features\": [\"Feature 1\", \"Feature 2\"], \"technologies\": [\"Tech 1\", \"Resource 1\"] }";
+      } else if (type === 'interview') {
+        prompt = "Analyze this research paper and generate comprehensive preparation materials for a student interview or thesis defense. Build deep technical questions, standard FAQs, and challenging criticism scenarios. Return ONLY a valid JSON object with this exact structure:\n" +
+                 "{\n" +
+                 "  \"faq\": [\n" +
+                 "    { \"question\": \"What is the central research question and why is it significant?\", \"answer\": \"Detailed clear answer based on paper introduction.\" }\n" +
+                 "  ],\n" +
+                 "  \"technical\": [\n" +
+                 "    { \"question\": \"Explain the core methodologies, metrics, or datasets leveraged.\", \"answer\": \"Detailed rigorous answer derived from paper method section.\" }\n" +
+                 "  ],\n" +
+                 "  \"defense\": [\n" +
+                 "    { \"question\": \"What are the main limitations or alternative explanations of your findings?\", \"answer\": \"Detailed defense answer balancing limitation with unique contributions.\" }\n" +
+                 "  ]\n" +
+                 "}\n" +
+                 "Make sure you generate at least 3 high-quality questions inside each of the faq, technical, and defense arrays.";
       }
 
       const payload = {
@@ -781,7 +933,7 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen bg-[#FFF0DC] font-sans text-[#131010] relative overflow-hidden">
       
-      {/* Welcome Message Modal */}
+      {/* Welcome Message Modal with Interview Prep feature updated */}
       {showWelcomeMessage && (
         <div className="absolute inset-0 z-50 bg-[#131010]/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#FFF0DC] border border-[#F0BB78] rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-300">
@@ -811,6 +963,10 @@ export default function App() {
                  <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
                     <Rocket size={18} className="text-[#543A14] shrink-0 mt-0.5" />
                     <p className="text-xs text-[#131010]"><strong>Paper-to-Startup:</strong> Extract product ideas and business plans.</p>
+                 </div>
+                 <div className="flex items-start gap-3 bg-[#F0BB78]/10 p-3 rounded-lg border border-[#F0BB78]/30">
+                    <GraduationCap size={18} className="text-[#543A14] shrink-0 mt-0.5" />
+                    <p className="text-xs text-[#131010]"><strong>Interview Prep:</strong> Generate FAQs, technical questions, and thesis defense guidelines.</p>
                  </div>
              </div>
 
@@ -901,7 +1057,7 @@ export default function App() {
                   className="p-1 text-[#543A14] hover:bg-[#F0BB78]/20 rounded-md transition-colors"
                   title="Collapse Sidebar"
                 >
-                  <ChevronFirst size={18} />
+                  <PanelLeftClose size={18} />
                 </button>
               </div>
 
@@ -971,14 +1127,14 @@ export default function App() {
               </div>
             </>
           ) : (
-            /* Slim Gemini-Style Sidebar (Closed state) */
+            /* Slim Left Sidebar (Closed state) */
             <div className="flex flex-col items-center py-4 gap-4 h-full">
               <button 
                 onClick={() => setIsSidebarOpen(true)}
                 className="p-2 text-[#543A14] hover:bg-[#F0BB78]/20 rounded-md transition-colors shadow-sm border border-[#F0BB78]/20"
                 title="Expand Sidebar"
               >
-                <ChevronLast size={20} />
+                <PanelLeft size={20} />
               </button>
               
               <div className="w-full border-t border-[#F0BB78]/30" />
@@ -1048,6 +1204,14 @@ export default function App() {
                     setActiveTab={setActiveTab} 
                     icon={Rocket} 
                     label="Startup" 
+                  />
+
+                  <TabButton 
+                    tabId="interview" 
+                    activeTab={activeTab} 
+                    setActiveTab={setActiveTab} 
+                    icon={GraduationCap} 
+                    label="Interview Prep" 
                   />
 
                   <div className="ml-auto flex items-center pr-2">
@@ -1182,6 +1346,29 @@ export default function App() {
                     )}
                   </div>
                 )}
+
+                {activeTab === 'interview' && (
+                  <div className="flex-1 overflow-hidden relative bg-[#FFF0DC] flex flex-col">
+                    {!selectedDocument.interview ? (
+                      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#FFF0DC]">
+                         <div className="bg-[#F0BB78]/20 p-4 rounded-full mb-4">
+                           <GraduationCap size={40} className="text-[#543A14]" />
+                         </div>
+                         <h3 className="text-lg font-bold text-[#131010] mb-2">Prepare for Presentation & Thesis Defense</h3>
+                         <p className="text-sm text-[#543A14] mb-6 max-w-md leading-relaxed">Let Gemini generate custom Frequently Asked Questions, Technical Deep-dives, and challenging Research Defense inquiries complete with top-tier model answers.</p>
+                         <button 
+                           onClick={() => handleGenerateFeature('interview')}
+                           disabled={isGeneratingFeature}
+                           className="flex items-center gap-2 bg-[#F0BB78] text-[#131010] px-5 py-2.5 rounded-lg hover:bg-[#F0BB78]/80 disabled:opacity-50 transition-colors font-medium shadow-sm"
+                         >
+                           {isGeneratingFeature ? <><Loader2 size={18} className="animate-spin" /> Formulating Exam Inquiries...</> : <><GraduationCap size={18} /> Generate Interview Prep Materials</>}
+                         </button>
+                      </div>
+                    ) : (
+                      <InterviewViewer interview={selectedDocument.interview} />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -1195,81 +1382,117 @@ export default function App() {
           )}
         </div>
 
+        {}
         {/* Right Panel: Chatbot */}
-        <div className="w-[290px] bg-[#FFF0DC] border-l border-[#F0BB78]/50 flex flex-col shrink-0 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.02)]">
-          
-          <div className="p-4 border-b border-[#F0BB78]/50 bg-[#FFF0DC] z-10 shadow-sm shrink-0 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[#543A14] animate-pulse" />
-            <h2 className="font-semibold text-[#131010]">Research Assistant</h2>
-          </div>
-
-          {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-[#FFF0DC]">
-            {chatHistory.map((msg, index) => (
-              <div 
-                key={index} 
-                className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-sm ${
-                  msg.role === 'user' ? 'bg-[#131010] text-[#FFF0DC]' : 'bg-[#F0BB78] text-[#131010]'
-                }`}>
-                  {msg.role === 'user' ? <User size={16} /> : <Bot size={18} />}
+        <div 
+          className={`bg-[#FFF0DC] border-l border-[#F0BB78]/50 flex flex-col shrink-0 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.02)] transition-all duration-300 relative ${
+            isRightSidebarOpen ? 'w-[290px]' : 'w-[50px]'
+          }`}
+        >
+          {isRightSidebarOpen ? (
+            <>
+              <div className="p-4 border-b border-[#F0BB78]/50 bg-[#FFF0DC] z-10 shadow-sm shrink-0 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#543A14] animate-pulse" />
+                  <h2 className="font-semibold text-[#131010]">Research Assistant</h2>
                 </div>
+                <button 
+                  onClick={() => setIsRightSidebarOpen(false)}
+                  className="p-1.5 text-[#543A14] hover:bg-[#F0BB78]/20 rounded-md transition-colors"
+                  title="Collapse Chat Panel"
+                >
+                  <PanelRightClose size={18} />
+                </button>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-[#FFF0DC]">
+                {chatHistory.map((msg, index) => (
+                  <div 
+                    key={index} 
+                    className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-sm ${
+                      msg.role === 'user' ? 'bg-[#131010] text-[#FFF0DC]' : 'bg-[#F0BB78] text-[#131010]'
+                    }`}>
+                      {msg.role === 'user' ? <User size={16} /> : <Bot size={18} />}
+                    </div>
+                    
+                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
+                      msg.role === 'user' 
+                        ? 'bg-[#131010] text-[#FFF0DC] rounded-tr-sm' 
+                        : 'bg-[#FFF0DC] border border-[#F0BB78] text-[#131010] rounded-tl-sm'
+                    }`}>
+                      {msg.role === 'model' ? formatText(msg.text) : <span className="whitespace-pre-wrap">{msg.text}</span>}
+                    </div>
+                  </div>
+                ))}
                 
-                <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
-                  msg.role === 'user' 
-                    ? 'bg-[#131010] text-[#FFF0DC] rounded-tr-sm' 
-                    : 'bg-[#FFF0DC] border border-[#F0BB78] text-[#131010] rounded-tl-sm'
-                }`}>
-                  {msg.role === 'model' ? formatText(msg.text) : <span className="whitespace-pre-wrap">{msg.text}</span>}
-                </div>
+                {isChatLoading && (
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#F0BB78] text-[#131010] flex items-center justify-center shrink-0 mt-1 shadow-sm">
+                      <Bot size={18} />
+                    </div>
+                    <div className="bg-[#FFF0DC] border border-[#F0BB78] rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 bg-[#543A14] rounded-full animate-bounce [animation-delay:-0.3s]" />
+                      <div className="w-1.5 h-1.5 bg-[#543A14] rounded-full animate-bounce [animation-delay:-0.15s]" />
+                      <div className="w-1.5 h-1.5 bg-[#543A14] rounded-full animate-bounce" />
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
               </div>
-            ))}
-            
-            {isChatLoading && (
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#F0BB78] text-[#131010] flex items-center justify-center shrink-0 mt-1 shadow-sm">
-                  <Bot size={18} />
-                </div>
-                <div className="bg-[#FFF0DC] border border-[#F0BB78] rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 bg-[#543A14] rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <div className="w-1.5 h-1.5 bg-[#543A14] rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <div className="w-1.5 h-1.5 bg-[#543A14] rounded-full animate-bounce" />
-                </div>
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
 
-          {/* Chat Input */}
-          <div className="p-4 bg-[#FFF0DC] border-t border-[#F0BB78]/50 shrink-0">
-            <div className="flex items-end gap-2 bg-[#FFF0DC] border border-[#F0BB78] rounded-xl p-1.5 focus-within:border-[#543A14] focus-within:ring-1 focus-within:ring-[#543A14] transition-all shadow-sm">
-              <textarea
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-                placeholder={documents.length === 0 ? "Upload documents first..." : "Ask about your documents..."}
-                disabled={documents.length === 0 || isChatLoading}
-                className="w-full max-h-32 min-h-[44px] bg-transparent border-none resize-none focus:outline-none p-3 text-sm text-[#131010] disabled:opacity-50 placeholder-[#543A14]/50"
-                rows={1}
-              />
+              {/* Chat Input */}
+              <div className="p-4 bg-[#FFF0DC] border-t border-[#F0BB78]/50 shrink-0">
+                <div className="flex items-end gap-2 bg-[#FFF0DC] border border-[#F0BB78] rounded-xl p-1.5 focus-within:border-[#543A14] focus-within:ring-1 focus-within:ring-[#543A14] transition-all shadow-sm">
+                  <textarea
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                    placeholder={documents.length === 0 ? "Upload documents first..." : "Ask about your documents..."}
+                    disabled={documents.length === 0 || isChatLoading}
+                    className="w-full max-h-32 min-h-[44px] bg-transparent border-none resize-none focus:outline-none p-3 text-sm text-[#131010] disabled:opacity-50 placeholder-[#543A14]/50"
+                    rows={1}
+                  />
+                  <button 
+                    onClick={handleSendMessage}
+                    disabled={!inputMessage.trim() || documents.length === 0 || isChatLoading}
+                    className="mb-1 mr-1 p-2 bg-[#F0BB78] text-[#131010] rounded-lg hover:bg-[#F0BB78]/80 disabled:bg-[#F0BB78]/30 disabled:text-[#543A14]/50 transition-all shrink-0 shadow-sm"
+                  >
+                    <Send size={18} />
+                  </button>
+                </div>
+                <div className="text-center mt-2">
+                   <span className="text-[10px] text-[#543A14]">Powered by Gemini 2.5 Flash</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            /* Slim Right Sidebar (Closed state) */
+            <div className="flex flex-col items-center py-4 gap-4 h-full">
               <button 
-                onClick={handleSendMessage}
-                disabled={!inputMessage.trim() || documents.length === 0 || isChatLoading}
-                className="mb-1 mr-1 p-2 bg-[#F0BB78] text-[#131010] rounded-lg hover:bg-[#F0BB78]/80 disabled:bg-[#F0BB78]/30 disabled:text-[#543A14]/50 transition-all shrink-0 shadow-sm"
+                onClick={() => setIsRightSidebarOpen(true)}
+                className="p-2 text-[#543A14] hover:bg-[#F0BB78]/20 rounded-md transition-colors shadow-sm border border-[#F0BB78]/20"
+                title="Expand Chat Panel"
               >
-                <Send size={18} />
+                <PanelRight size={20} />
               </button>
+              
+              <div className="w-full border-t border-[#F0BB78]/30" />
+              
+              <div className="flex-1 flex flex-col items-center justify-center gap-3 w-full">
+                <span className="text-xs font-bold text-[#543A14] tracking-widest [writing-mode:vertical-lr] uppercase">
+                  Research Chat
+                </span>
+              </div>
             </div>
-            <div className="text-center mt-2">
-               <span className="text-[10px] text-[#543A14]">Powered by Gemini 2.5 Flash</span>
-            </div>
-          </div>
+          )}
         </div>
 
       </main>
